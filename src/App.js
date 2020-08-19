@@ -1,25 +1,56 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import api from './services/api';
+import { uuid } from 'react-uuid';
 
 import "./styles.css";
 
 function App() {
+  const [repositories, setRepositories] = useState([]);
+
+  useEffect(() => {
+    api.get('/repositories').then(response => {
+      setRepositories(response.data);
+    })
+  }, [repositories.id]);
+
   async function handleAddRepository() {
-    // TODO
+    const response = await api.post('repositories', {
+      "id": uuid,
+      "title": `bootcamp-gostack-desafio02 ${Date.now()}`,
+      "url": "https://google.com",
+      "techs": [
+        "React",
+      ]
+    });
+
+    const repository = response.data;
+    setRepositories([...repositories, repository]);
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    console.log(repositories)
+    
+    const repositoryIndex = repositories.findIndex(repo => repo.id === id);    
+    const repository = repositories.splice(repositoryIndex,1)
+    console.log(repository)
+
+    api.delete(`repositories/${id}`).then(
+      setRepositories(repository)
+    )
   }
 
   return (
     <div>
       <ul data-testid="repository-list">
         <li>
-          Repositório 1
-
-          <button onClick={() => handleRemoveRepository(1)}>
-            Remover
-          </button>
+          {repositories.map(repositories =>
+            <div key={repositories.id+1}>
+              <span key={repositories.id}>{repositories.title}</span>
+              <button key={repositories.id+2} onClick={() => handleRemoveRepository(repositories.id)}>
+                Remover
+              </button>
+            </div>
+          )}
         </li>
       </ul>
 
