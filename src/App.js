@@ -28,11 +28,8 @@ function App() {
   }
 
   async function handleRemoveRepository(id) {
-    console.log(repositories)
-    
-    const repositoryIndex = repositories.findIndex(repo => repo.id === id);    
-    const repository = repositories.splice(repositoryIndex,1)
-    console.log(repository)
+    const repositoryFinded = repositories.find(repo => repo.id === id)
+    const repository = repositories.filter(repo => repo !== repositoryFinded)
 
     api.delete(`repositories/${id}`).then(
       setRepositories(repository)
@@ -41,17 +38,17 @@ function App() {
 
   return (
     <div>
-      <ul data-testid="repository-list">
-        <li>
+      <ul data-testid="repository-list">          
           {repositories.map(repositories =>
-            <div key={repositories.id+1}>
-              <span key={repositories.id}>{repositories.title}</span>
-              <button key={repositories.id+2} onClick={() => handleRemoveRepository(repositories.id)}>
-                Remover
-              </button>
-            </div>
-          )}
-        </li>
+            <li key={repositories.id+1}>
+              <div key={repositories.id+2}>
+                <span key={repositories.id}>{repositories.title}</span>
+                <button key={repositories.id+3} onClick={() => handleRemoveRepository(repositories.id)}>
+                  Remover
+                </button>
+              </div>
+            </li>
+          )}        
       </ul>
 
       <button onClick={handleAddRepository}>Adicionar</button>
